@@ -1,0 +1,27 @@
+﻿@page "/login"
+@model KakaoManagerBeta.Pages.loginModel
+@{
+}
+
+<form id="login-form" class="container mt-5" style="max-width: 400px;">
+	<h3 class="mb-3">KakaoManager</h3>
+	<input class="form-control mb-3" type="text" id="userId" placeholder="아이디" />
+	<input class="form-control mb-3" type="password" id="userPassword" placeholder="비밀번호" />
+	<button class="form-control btn btn-success">로그인</button>
+</form>
+
+<script type="text/javascript">
+	let loginForm = document.getElementById("login-form");
+	loginForm.addEventListener("submit", async (e) => {
+		e.preventDefault();
+		const url = `/api/login/${e.target.userId.value}/${e.target.userPassword.value}`;
+		try {
+			const data = await axios.post(url)
+			document.cookie = "guid=" + data.data;
+			location.href = "../";
+		} catch (err) {
+			console.error(err);
+			alert("로그인에 실패했습니다");
+		}
+	});
+</script>
