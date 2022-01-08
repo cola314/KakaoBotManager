@@ -1,0 +1,112 @@
+﻿@page "/"
+@inject UserInteraction window
+@inject NavigationManager navigationManager
+@using global::KakaoBotManager.Services
+@using global::KakaoBotManager.Storage
+@using global::KakaoBotManager.Utils
+
+<PageTitle>KakaoBotManager</PageTitle>
+
+@if (addressService.IsLoaded)
+{
+	<h3 class="mt-5 mb-3">등록된 앱 목록 (@AddressList.Count 개)</h3>
+	<ol class="p-3">
+		@foreach (var address in AddressList)
+		{
+			<li class="mb-3">
+				<span class="mr-2">@address</span>
+				<button class="btn btn-danger" @onclick="@(() => RemoveAddress(address))" @onclick:preventDefault="true">
+					삭제
+				</button>
+			</li>
+		}
+	</ol>
+}
+else
+{
+	<h3>데이터를 불러오는데 실패했습니다</h3>
+}
+	
+<form class="form-inline" @onsubmit="@AddAddress" @onsubmit:preventDefault="true">
+	<input type="text" @bind-value="@addressInput" class="form-control mr-1 w-50" 
+		placeholder="ex) http://hello.com" style="max-width:400px;"/>
+	<button type="submit" class="btn btn-primary">추가</button>
+</form>
+
+@code {
+	string addressInput;
+
+	[Inject]
+	AddressService addressService { get; set; }
+
+	[Inject]
+	TokenStorage tokenStorage { get; set; }
+
+	List<string> AddressList = new List<string>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			await tokenStorage.LoadSavedToken();
+			AddressList = addressService.GetAddressList();
+			this.StateHasChanged();
+		}
+		catch (UnauthorizedAccessException)
+		{
+			navigationManager.NavigateTo("/login");
+		}
+	}
+
+	void Refresh()
+	{
+		try
+		{
+			AddressList = addressService.GetAddressList();
+			this.StateHasChanged();
+		}
+		catch (UnauthorizedAccessException)
+		{
+			window.Alert("로그아웃 되었습니다"); 
+			navigationManager.NavigateTo("/login");
+		}
+	}
+
+	async void RemoveAddress(string address) 
+	{
+		if (!await window.Confirm($"{address}를 삭제하시겠습니까?"))
+			return;
+
+		try
+		{
+			addressService.RemoveAddress(address);
+			Refresh();
+		}
+		catch (UnauthorizedAccessException)
+		{
+			window.Alert("로그아웃 되었습니다");
+			navigationManager.NavigateTo("/login");
+		}
+	}
+
+	void AddAddress()
+	{
+		if (addressInput == null || !(addressInput.StartsWith("http://") || addressInput.StartsWith("https://")))
+		{
+			window.Alert(@"앱 주소는 http:// 또는 https://로 시작해야합니다");
+			return;
+		}
+
+		try
+		{
+			addressService.AddAddress(addressInput);
+			addressInput = "";
+			Refresh();
+		}
+		catch (UnauthorizedAccessException)
+		{
+			window.Alert("로그아웃 되었습니다");
+			navigationManager.NavigateTo("/login");
+		}
+	}
+}
