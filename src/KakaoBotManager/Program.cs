@@ -1,3 +1,4 @@
+using KakaoBotManager.Config;
 using KakaoBotManager.Repository;
 using KakaoBotManager.Services;
 using KakaoBotManager.Storage;
@@ -24,10 +25,22 @@ builder.Services
     .AddSingleton<TokenRepository>()
     .AddSingleton<AddressRepository>();
 
-builder.Services.AddSingleton<KakaoBotService>();
+builder.Services
+    .AddSingleton<KakaoBotService>();
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddSingleton<IEnvironmentConfig, DevelopmentEnvironmentConfig>();
+}
+else
+{
+    builder.Services.AddSingleton<IEnvironmentConfig, EnvironmentConfig>();
+}
 
 var app = builder.Build();
 
+// Eager loading to check enviroment variable is valid
+app.Services.GetService<IEnvironmentConfig>();
 app.Services.GetService<KakaoBotService>().Run();
 
 // Configure the HTTP request pipeline.

@@ -1,11 +1,12 @@
-﻿using System.Runtime.CompilerServices;
+﻿using KakaoBotManager.Config;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 
 namespace KakaoBotManager.Repository;
 
 public class AddressRepository
 {
-    private readonly string BACKUP_FILE = Path.Join(Directory.GetCurrentDirectory(), "/data", "backup.dat");
+	private readonly string BACKUP_FILE;
 
 	private Lazy<List<string>> _addresses;
 
@@ -13,13 +14,14 @@ public class AddressRepository
 
 	public bool IsLoaded { get; private set; }
 
-	public AddressRepository(ILogger<AddressRepository> logger)
+	public AddressRepository(ILogger<AddressRepository> logger, IEnvironmentConfig config)
 	{
+		BACKUP_FILE = config.BACKUP_FILE;
 		_logger = logger;
 		_addresses = new Lazy<List<string>>(() =>
 		{
 			IsLoaded = true;
-			try  
+			try
 			{
 				var dir = Path.GetDirectoryName(BACKUP_FILE);
 				if (!Directory.Exists(dir))

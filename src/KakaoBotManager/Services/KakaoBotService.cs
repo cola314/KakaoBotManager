@@ -1,4 +1,5 @@
 ﻿using EngineIOSharp.Common.Enum;
+using KakaoBotManager.Config;
 using KakaoBotManager.Repository;
 using SocketIOSharp.Client;
 
@@ -14,28 +15,34 @@ public class Message
 
 public class KakaoBotService : IDisposable
 {
-    const string SERVER_URI = "***REMOVED***";
-    const int SERVER_PORT = 9200;
+    private readonly string MESSAGE_SERVER_HOST;
+    private readonly int MESSAGE_SERVER_PORT;
+    private readonly string MESSAGE_API_KEY;
 
     private SocketIOClient client_;
     private HttpClient httpClient_;
     private readonly AddressRepository _addressRepository;
     private readonly ILogger _logger;
-	public KakaoBotService(AddressRepository addressRepository, ILogger<KakaoBotService> logger)
+	public KakaoBotService(AddressRepository addressRepository, ILogger<KakaoBotService> logger, IEnvironmentConfig config)
 	{
+        MESSAGE_SERVER_HOST = config.MESSAGE_SERVER_HOST;
+        MESSAGE_SERVER_PORT = config.MESSAGE_SERVER_PORT;
+        MESSAGE_API_KEY = config.MESSAGE_API_KEY;
+
         _addressRepository = addressRepository;
         _logger = logger;
-	}
+
+        httpClient_ = new HttpClient();
+        client_ = new SocketIOClient(new SocketIOClientOption(EngineIOScheme.http, MESSAGE_SERVER_HOST, (ushort)MESSAGE_SERVER_PORT));
+    }
 
     public void Run()
     {
         _logger.LogInformation("Run socket io client");
-        httpClient_ = new HttpClient();
-        client_ = new SocketIOClient(new SocketIOClientOption(EngineIOScheme.http, SERVER_URI, SERVER_PORT));
 
         var registerData = new Dictionary<string, string>()
         {
-            ["password"] = "4321"
+            ["password"] = MESSAGE_API_KEY
         };
 
         client_.On("connect", () =>
