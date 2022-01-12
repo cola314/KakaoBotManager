@@ -6,9 +6,9 @@ namespace KakaoBotManager.Services;
 public class AuthService
 {
 	private readonly AuthRepository _authRepository;
-	private readonly TokenStorage _tokenStorage;
+	private readonly ITokenStorage _tokenStorage;
 
-	public AuthService(AuthRepository authRepository, TokenStorage tokenStorage)
+	public AuthService(AuthRepository authRepository, ITokenStorage tokenStorage)
 	{
 		_authRepository = authRepository;
 		_tokenStorage = tokenStorage;
