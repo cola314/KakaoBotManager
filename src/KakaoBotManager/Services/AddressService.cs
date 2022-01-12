@@ -5,10 +5,10 @@ namespace KakaoBotManager.Services;
 
 public class AddressService
 {
-	private readonly TokenStorage _tokenStorage;
-	private readonly AddressRepository _addressRepository;
+	private readonly ITokenStorage _tokenStorage;
+	private readonly IAddressRepository _addressRepository;
 
-	public AddressService(TokenStorage tokenStorage, AddressRepository addressRepository)
+	public AddressService(ITokenStorage tokenStorage, IAddressRepository addressRepository)
 	{
 		_tokenStorage = tokenStorage;
 		_addressRepository = addressRepository;

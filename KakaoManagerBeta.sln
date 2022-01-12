@@ -5,6 +5,8 @@ VisualStudioVersion = 17.1.31911.260
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KakaoBotManager", "src\KakaoBotManager\KakaoBotManager.csproj", "{91EC0743-755A-47F9-BA7A-9DF9DD86F281}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KakaoBotManager.Test", "src\KakaoBotManager.Test\KakaoBotManager.Test.csproj", "{5267EA9D-B3A5-473F-B3A4-DD2904FE8783}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{91EC0743-755A-47F9-BA7A-9DF9DD86F281}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91EC0743-755A-47F9-BA7A-9DF9DD86F281}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91EC0743-755A-47F9-BA7A-9DF9DD86F281}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5267EA9D-B3A5-473F-B3A4-DD2904FE8783}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5267EA9D-B3A5-473F-B3A4-DD2904FE8783}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5267EA9D-B3A5-473F-B3A4-DD2904FE8783}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5267EA9D-B3A5-473F-B3A4-DD2904FE8783}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
