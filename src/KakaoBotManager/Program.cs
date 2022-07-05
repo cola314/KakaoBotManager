@@ -14,7 +14,7 @@ builder.Services.AddServerSideBlazor();
 
 builder.Services
     .AddScoped<UserInteraction>()
-    .AddScoped<TokenStorage>();
+    .AddScoped<ITokenStorage, TokenStorage>();
 
 builder.Services
     .AddTransient<AuthService>()
@@ -23,7 +23,7 @@ builder.Services
 builder.Services
     .AddSingleton<AuthRepository>()
     .AddSingleton<TokenRepository>()
-    .AddSingleton<AddressRepository>();
+    .AddSingleton<IAddressRepository, AddressRepository>();
 
 builder.Services
     .AddSingleton<KakaoBotService>();

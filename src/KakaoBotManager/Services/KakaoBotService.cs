@@ -21,9 +21,9 @@ public class KakaoBotService : IDisposable
 
     private SocketIOClient client_;
     private HttpClient httpClient_;
-    private readonly AddressRepository _addressRepository;
+    private readonly IAddressRepository _addressRepository;
     private readonly ILogger _logger;
-	public KakaoBotService(AddressRepository addressRepository, ILogger<KakaoBotService> logger, IEnvironmentConfig config)
+	public KakaoBotService(IAddressRepository addressRepository, ILogger<KakaoBotService> logger, IEnvironmentConfig config)
 	{
         MESSAGE_SERVER_HOST = config.MESSAGE_SERVER_HOST;
         MESSAGE_SERVER_PORT = config.MESSAGE_SERVER_PORT;

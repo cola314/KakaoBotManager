@@ -40,7 +40,7 @@ else
 	AddressService addressService { get; set; }
 
 	[Inject]
-	TokenStorage tokenStorage { get; set; }
+	ITokenStorage tokenStorage { get; set; }
 
 	List<string> AddressList = new List<string>();
 
