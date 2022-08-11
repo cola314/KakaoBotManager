@@ -1,4 +1,6 @@
-﻿using KakaoBotManager.Repository;
+﻿using System.Security.Authentication;
+using KakaoBotManager.Exceptions;
+using KakaoBotManager.Repository;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace KakaoBotManager.Storage;
@@ -27,7 +29,14 @@ public class TokenStorage : ITokenStorage
 
     public async Task LoadSavedToken()
     {
-        _userToken = (await _localStorage.GetAsync<Guid>(TOKEN_KEY)).Value;
+        try
+        {
+            _userToken = (await _localStorage.GetAsync<Guid>(TOKEN_KEY)).Value;
+        }
+        catch
+        {
+            throw new InvalidTokenException();
+        }
     }
 
     public void CreateToken()

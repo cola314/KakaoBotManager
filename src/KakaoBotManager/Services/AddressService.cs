@@ -1,4 +1,5 @@
-﻿using KakaoBotManager.Repository;
+﻿using KakaoBotManager.Exceptions;
+using KakaoBotManager.Repository;
 using KakaoBotManager.Storage;
 
 namespace KakaoBotManager.Services;
@@ -19,7 +20,7 @@ public class AddressService
     public void AddAddress(string url)
 	{
 		if (!_tokenStorage.IsValid)
-			throw new UnauthorizedAccessException();
+			throw new UnauthorizedException();
 
 		_addressRepository.Add(url);
 		_addressRepository.Save();
@@ -28,7 +29,7 @@ public class AddressService
 	public void RemoveAddress(string url)
 	{
 		if (!_tokenStorage.IsValid)
-			throw new UnauthorizedAccessException();
+			throw new UnauthorizedException();
 
 		_addressRepository.Remove(url);
 		_addressRepository.Save();
@@ -37,7 +38,7 @@ public class AddressService
 	public List<string> GetAddressList()
 	{
 		if (!_tokenStorage.IsValid)
-			throw new UnauthorizedAccessException();
+			throw new UnauthorizedException();
 
 		return _addressRepository.GetAll();
 	}

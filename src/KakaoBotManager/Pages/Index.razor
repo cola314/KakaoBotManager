@@ -4,6 +4,7 @@
 @using global::KakaoBotManager.Services
 @using global::KakaoBotManager.Storage
 @using global::KakaoBotManager.Utils
+@using KakaoBotManager.Exceptions
 
 <PageTitle>KakaoBotManager</PageTitle>
 
@@ -46,16 +47,20 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		try
-		{
-			await tokenStorage.LoadSavedToken();
-			AddressList = addressService.GetAddressList();
-			this.StateHasChanged();
-		}
-		catch (UnauthorizedAccessException)
-		{
-			navigationManager.NavigateTo("/login");
-		}
+	    try
+	    {
+	        await tokenStorage.LoadSavedToken();
+	        AddressList = addressService.GetAddressList();
+	        this.StateHasChanged();
+	    }
+	    catch (UnauthorizedException)
+	    {
+	        navigationManager.NavigateTo("/login");
+	    }
+	    catch (InvalidTokenException)
+	    {
+	        navigationManager.NavigateTo("/login");
+	    }
 	}
 
 	void Refresh()
@@ -65,7 +70,7 @@ else
 			AddressList = addressService.GetAddressList();
 			this.StateHasChanged();
 		}
-		catch (UnauthorizedAccessException)
+		catch (UnauthorizedException)
 		{
 			window.Alert("로그아웃 되었습니다"); 
 			navigationManager.NavigateTo("/login");
@@ -82,7 +87,7 @@ else
 			addressService.RemoveAddress(address);
 			Refresh();
 		}
-		catch (UnauthorizedAccessException)
+		catch (UnauthorizedException)
 		{
 			window.Alert("로그아웃 되었습니다");
 			navigationManager.NavigateTo("/login");
@@ -103,7 +108,7 @@ else
 			addressInput = "";
 			Refresh();
 		}
-		catch (UnauthorizedAccessException)
+		catch (UnauthorizedException)
 		{
 			window.Alert("로그아웃 되었습니다");
 			navigationManager.NavigateTo("/login");

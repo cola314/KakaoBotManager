@@ -3,6 +3,7 @@ using KakaoBotManager.Services;
 using KakaoBotManager.Storage;
 using Moq;
 using System;
+using KakaoBotManager.Exceptions;
 using Xunit;
 
 namespace KakaoBotManager.Test.Services;
@@ -21,11 +22,11 @@ public class AddressServiceTests
     }
 
     [Fact]
-    public void AddAddress_WhenTokenIsInvalid_ThrowsUnauthorizedAccessException()
+    public void AddAddress_WhenTokenIsInvalid_ThrowsUnauthorizedException()
     {
         _storage.Setup(s => s.IsValid).Returns(false);
 
-        Assert.Throws<UnauthorizedAccessException>(() => _service.AddAddress("url"));
+        Assert.Throws<UnauthorizedException>(() => _service.AddAddress("url"));
     }
 
     [Fact]
@@ -40,11 +41,11 @@ public class AddressServiceTests
     }
 
     [Fact]
-    public void RemoveAddress_WhenTokenIsInvalid_ThrowsUnauthorizedAccessException()
+    public void RemoveAddress_WhenTokenIsInvalid_ThrowsUnauthorizedException()
     {
         _storage.Setup(s => s.IsValid).Returns(false);
 
-        Assert.Throws<UnauthorizedAccessException>(() => _service.RemoveAddress("url"));
+        Assert.Throws<UnauthorizedException>(() => _service.RemoveAddress("url"));
     }
 
     [Fact]
@@ -79,11 +80,11 @@ public class AddressServiceTests
     }
 
     [Fact]
-    public void GetAddressList_WhenTokenIsInvalid_ThrowsUnauthorizedAccessException()
+    public void GetAddressList_WhenTokenIsInvalid_ThrowsUnauthorizedException()
     {
         _storage.Setup(s => s.IsValid).Returns(false);
 
-        Assert.Throws<UnauthorizedAccessException>(() => _service.GetAddressList());
+        Assert.Throws<UnauthorizedException>(() => _service.GetAddressList());
     }
 
     [Fact]
