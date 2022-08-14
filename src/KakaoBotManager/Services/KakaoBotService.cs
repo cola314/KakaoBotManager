@@ -1,93 +1,88 @@
-﻿using EngineIOSharp.Common.Enum;
+﻿using System.Text.Json;
 using KakaoBotManager.Config;
+using KakaoBotManager.Dtos;
+using KakaoBotManager.Models;
 using KakaoBotManager.Repository;
-using SocketIOSharp.Client;
+using StackExchange.Redis;
 
 namespace KakaoBotManager.Services;
 
-public class Message
+public class KakaoBotService
 {
-    public string Sender { get; set; }
-    public string Room { get; set; }
-    public string Msg { get; set; }
-    public bool IsGroupChat { get; set; }
-}
+    private readonly string _pushChannel = "push_channel";
+    private readonly string _messageQueueChannel = "message_queue";
 
-public class KakaoBotService : IDisposable
-{
-    private readonly string MESSAGE_SERVER_HOST;
-    private readonly int MESSAGE_SERVER_PORT;
-    private readonly string MESSAGE_API_KEY;
+    private readonly HttpClient _httpClient;
 
-    private SocketIOClient client_;
-    private HttpClient httpClient_;
+    private readonly IConnectionMultiplexer _redis;
     private readonly IAddressRepository _addressRepository;
+    private readonly IEnvironmentConfig _config;
     private readonly ILogger _logger;
-	public KakaoBotService(IAddressRepository addressRepository, ILogger<KakaoBotService> logger, IEnvironmentConfig config)
-	{
-        MESSAGE_SERVER_HOST = config.MESSAGE_SERVER_HOST;
-        MESSAGE_SERVER_PORT = config.MESSAGE_SERVER_PORT;
-        MESSAGE_API_KEY = config.MESSAGE_API_KEY;
 
+    public KakaoBotService(IAddressRepository addressRepository, ILogger<KakaoBotService> logger, IEnvironmentConfig config)
+    {
+        _redis = ConnectionMultiplexer.Connect($"{config.REDIS_SERVER}:{config.REDIS_PORT},abortConnect=false,ConnectTimeout=3000");
         _addressRepository = addressRepository;
         _logger = logger;
-
-        httpClient_ = new HttpClient();
-        client_ = new SocketIOClient(new SocketIOClientOption(EngineIOScheme.http, MESSAGE_SERVER_HOST, (ushort)MESSAGE_SERVER_PORT));
+        _config = config;
+        _httpClient = new HttpClient();
     }
 
-    public void Run()
+    public async Task SendPushMessage(PushMessage message)
     {
-        _logger.LogInformation("Run socket io client");
+        var json = JsonSerializer.Serialize(message);
+        await _redis.GetSubscriber().PublishAsync(_pushChannel, json);
+    }
 
-        var registerData = new Dictionary<string, string>()
-        {
-            ["password"] = MESSAGE_API_KEY
-        };
+    public async Task Run(CancellationToken ctx = default)
+    {
+        _logger.LogInformation("[Run KakaoBotService]");
 
-        client_.On("connect", () =>
+        await foreach (var message in GetReceivedMessages(ctx))
         {
-            client_.Emit("register", registerData);
-        });
+            SendMessages(message);
+        }
+    }
 
-        client_.On("receive message", (data) =>
+    private void SendMessages(ReceivedMessage message)
+    {
+        foreach (var address in _addressRepository.GetAll())
         {
-            Message message = null;
+            _logger.LogInformation("[Send message to client] {0}", address);
+
+            var dto = new WebhookMessageDto(message, _config.WEBHOOK_SECRET);
+            _httpClient.PostAsJsonAsync(address, dto)
+                .ContinueWith(t =>
+                {
+                    _logger.LogError("[Fail to Send message to client] address: {0}, message:{1}", address, t.Exception.Message);
+                }, TaskContinuationOptions.OnlyOnFaulted);
+        }
+    }
+
+    private async IAsyncEnumerable<ReceivedMessage> GetReceivedMessages(CancellationToken ctx)
+    {
+        while (!ctx.IsCancellationRequested)
+        {
+            ReceivedMessage? message = null;
             try
-			{
-                message = data[0].ToObject<Message>();
+            {
+                var value = _redis.GetDatabase().ListLeftPop(_messageQueueChannel);
+                if (value.IsNull)
+                {
+                    await Task.Delay(10, ctx);
+                }
+                else
+                {
+                    message = JsonSerializer.Deserialize<ReceivedMessage>(value.ToString());
+                }
             }
             catch (Exception ex)
-			{
-                _logger.LogError("Fail to parse message\n{0}", ex);
-                return;
-			}
-            _logger.LogInformation("Receive message from message server");
+            {
+                Console.WriteLine("[Redis Error] " + ex.Message);
+            }
 
-            var domains = _addressRepository.GetAll();
-            domains.AsParallel()
-                .ForAll(address =>
-                {
-                    try
-                    {
-                        _logger.LogInformation("Send message to client {0}", address);
-                        httpClient_.PostAsJsonAsync(address, message);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError("Fail to Send message to client {0}\n{1}", address, ex.Message);
-                    }
-                });
-        });
-
-        client_.Connect();
-    }
-
-	public void Dispose()
-	{
-        client_?.Dispose();
-        httpClient_?.Dispose();
-        client_ = null;
-        httpClient_ = null;
+            if (message != null)
+                yield return message;
+        }
     }
 }

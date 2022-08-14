@@ -5,16 +5,12 @@ namespace KakaoBotManager.Config;
 public class EnvironmentConfig : IEnvironmentConfig
 {
     public string BACKUP_FILE { get; }
-
     public string ADMIN_USERNAME { get; }
-
     public string ADMIN_PASSWORD { get; }
-
-    public string MESSAGE_SERVER_HOST { get; }
-
-    public int MESSAGE_SERVER_PORT { get; }
-
     public string MESSAGE_API_KEY { get; }
+    public string REDIS_SERVER { get; }
+    public int REDIS_PORT { get; }
+    public string WEBHOOK_SECRET { get; }
 
     public EnvironmentConfig(ILogger<EnvironmentConfig> logger)
     {
@@ -24,9 +20,10 @@ public class EnvironmentConfig : IEnvironmentConfig
             BACKUP_FILE = GetStringEnviromentOrThrow(nameof(BACKUP_FILE));
             ADMIN_USERNAME = GetStringEnviromentOrThrow(nameof(ADMIN_USERNAME));
             ADMIN_PASSWORD = GetStringEnviromentOrThrow(nameof(ADMIN_PASSWORD));
-            MESSAGE_SERVER_HOST = GetStringEnviromentOrThrow(nameof(MESSAGE_SERVER_HOST));
-            MESSAGE_SERVER_PORT = GetIntEnviromentOrThrow(nameof(MESSAGE_SERVER_PORT));
             MESSAGE_API_KEY = GetStringEnviromentOrThrow(nameof(MESSAGE_API_KEY));
+            REDIS_SERVER = GetStringEnviromentOrThrow(nameof(REDIS_SERVER));
+            REDIS_PORT = GetIntEnviromentOrThrow(nameof(REDIS_PORT));
+            WEBHOOK_SECRET = GetStringEnviromentOrThrow(nameof(WEBHOOK_SECRET));
         }
         catch (Exception ex)
         {

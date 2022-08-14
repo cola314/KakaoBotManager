@@ -8,9 +8,11 @@ public class DevelopmentEnvironmentConfig : IEnvironmentConfig
 
     public string BACKUP_FILE => "data/backup.dat";
 
-    public string MESSAGE_API_KEY => "";
+    public string MESSAGE_API_KEY => "ApiKey";
 
-    public string MESSAGE_SERVER_HOST => "localhost";
+    public string REDIS_SERVER => "localhost";
 
-    public int MESSAGE_SERVER_PORT => 1234;
+    public int REDIS_PORT => 6379;
+
+    public string WEBHOOK_SECRET => "secret";
 }
