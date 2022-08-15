@@ -3,14 +3,13 @@ using KakaoBotManager.Repository;
 using KakaoBotManager.Services;
 using KakaoBotManager.Storage;
 using KakaoBotManager.Utils;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddControllers();
 
 builder.Services
     .AddScoped<UserInteraction>()
@@ -26,6 +25,7 @@ builder.Services
     .AddSingleton<IAddressRepository, AddressRepository>();
 
 builder.Services
+    .AddSingleton<ApiKeyService>()
     .AddSingleton<KakaoBotService>();
 
 if (builder.Environment.IsDevelopment())
@@ -51,12 +51,11 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 
 app.UseRouting();
 
+app.MapControllers();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
