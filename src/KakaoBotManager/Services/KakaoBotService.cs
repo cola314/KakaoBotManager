@@ -66,7 +66,7 @@ public class KakaoBotService
             ReceivedMessage? message = null;
             try
             {
-                var value = _redis.GetDatabase().ListLeftPop(_messageQueueChannel);
+                var value = await _redis.GetDatabase().ListLeftPopAsync(_messageQueueChannel);
                 if (value.IsNull)
                 {
                     await Task.Delay(10, ctx);
