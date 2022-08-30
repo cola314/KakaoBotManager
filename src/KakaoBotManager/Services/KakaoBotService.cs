@@ -66,14 +66,11 @@ public class KakaoBotService
             ReceivedMessage? message = null;
             try
             {
-                var value = await _redis.GetDatabase().ListLeftPopAsync(_messageQueueChannel);
-                if (value.IsNull)
+                var value = await _redis.GetDatabase().ExecuteAsync("BRPOP", "message_queue", 4);
+                if (!value.IsNull)
                 {
-                    await Task.Delay(10, ctx);
-                }
-                else
-                {
-                    message = JsonSerializer.Deserialize<ReceivedMessage>(value.ToString());
+                    var json = value.ToDictionary().FirstOrDefault().Value.ToString();
+                    message = JsonSerializer.Deserialize<ReceivedMessage>(json);
                 }
             }
             catch (Exception ex)
