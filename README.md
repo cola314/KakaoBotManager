@@ -1,6 +1,20 @@
 # KakaoBotManagerServer
 - 챗봇 서비스들의 API 게이트웨이
 
+<div align=center><h2>📚 STACKS</h2></div>
+
+<div align=center>
+  <img src="https://img.shields.io/badge/c%23-%23512BD4.svg?style=for-the-badge&logo=c-sharp&logoColor=white">
+  <img src="https://img.shields.io/badge/Visual%20Studio%202022-5C2D91.svg?style=for-the-badge&logo=visual-studio&logoColor=white">
+  <br/>
+  <img src="https://img.shields.io/badge/Blazor%20Server-5C2D91?style=for-the-badge&logo=blazor&logoColor=white">
+  <img src="https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white"> 
+  <br/>
+  <img src="https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white"> 
+  <img src="https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white">  
+  <br>
+</div>
+
 ## 기능
 - 관리자 인증
 
